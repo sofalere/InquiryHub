@@ -1,3 +1,5 @@
+const express = require('express');
+
 const port = 3000;
 
 const app = express();
@@ -18,9 +20,10 @@ app.get('/', (req, res) => {
 // `endpoint` (which will be dynamic eventually) using any method
 app.all('/listen/endpoint', (req, res) => {
   const endpoint = 'endpoint'; // when dynamic will retrieve req.params['endpoint']
-  console.log(endpoint, 'METHOD:', req.method, 'PATH:', req.path, 'BODY:', req.body);
-  // rdb.addRequest(endpoint, req.path, req.method, req.body);
-  res.send(`Any requests sent here are goin in the database! Look at all this data: ENDPOINT: ${endpoint}, METHOD: ${req.method}, PATH: ${req.path}, BODY: ${JSON.stringify(req.body)}`);
+  console.log(endpoint, 'METHOD:', req.method, 'PATH:', req.path, 'HEADERS:', req.headers, 'BODY:', req.body);
+  const documentData = [req.headers, req.body];
+  // rdb.addRequest(endpoint, req.path, req.method, documentData);
+  res.send(`Any requests sent here are goin in the database! Look at all this data: ENDPOINT: ${endpoint}, METHOD: ${req.method}, PATH: ${req.path}, HEADERS: ${JSON.stringify(req.headers)}, BODY: ${JSON.stringify(req.body)}`);
 });
 
 // retrieves and displays all the requests in a specific bin
