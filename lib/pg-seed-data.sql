@@ -1,4 +1,4 @@
-INSERT INTO bins (path)
+INSERT INTO bins (endpoint)
   VALUES ('/endpoint');
 
 

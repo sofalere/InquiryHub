@@ -3,7 +3,7 @@ CREATE TYPE method_type AS ENUM ('GET', 'POST', 'PUT', 'PATCH', 'DELETE');
 
 CREATE TABLE bins (
   id serial PRIMARY KEY,
-  path text NOT NULL,
+  endpoint text NOT NULL,
   created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
