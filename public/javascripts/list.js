@@ -1,7 +1,7 @@
 let dummyRequests = [
-  {request_id: 0, route: '/', method: 'GET', body: 'welcome to request bin'},
-  {request_id: 1, route: '/hi', method: 'POST', body: 'this is a post request'},
-  {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure'},
+  {request_id: 0, route: '/', method: 'GET', body: 'welcome to request bin', created_at: '11/12/12'},
+  {request_id: 1, route: '/hi', method: 'POST', body: 'this is a post request', created_at: '08/02/21'},
+  {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure', created_at: '9/01/22'},
 ]
 
 let dummyBins = [
@@ -10,7 +10,19 @@ let dummyBins = [
   {bin_id: 2, endpoint: '/hello'},
 ]
 
-document.addEventListener('DOMContentLoaded', () => {
+let dummyRequest = {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure', created_at: '9/01/22'}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // elements = {
+  //   home: document.querySelector('#home'),
+  //   binPage: document.querySelector('#all-bins'),
+  //   requestPage: document.querySelector('#single-bin'),
+  //   requests: document.querySelector('#requests'),
+  //   bins: document.querySelector('#bins'),
+  //   requestDetailModal: document.querySelector('#request_detail_modal'),
+  //   modalLayer: document.querySelector('#modal_layer'),
+  // }
+
   let requestPage = document.querySelector('#single-bin');
   let requestList = document.querySelector('#requests');
   let requestDetailModal = document.querySelector('#request_detail_modal');
@@ -18,11 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let binPage = document.querySelector('#all-bins');
   let binList = document.querySelector('#bins');
   let home = document.querySelector('#home');
+
+  let bins = await getBins();
   renderBins(dummyBins, binList, binPage); 
 
-  requestList.addEventListener('click', (e) => {
+  requestList.addEventListener('click', async (e) => {
     let id = e.target.dataset.request_id;
-    let body = dummyRequests.find(request => String(request.request_id) === id).body;
+    let request = await getRequest(id)
     requestDetailModal.textContent = body;
     showModal(modalLayer, requestDetailModal);
   });
@@ -34,9 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   binList.addEventListener('click', async (e) => {
       let binId = e.target.dataset.bin_id;
-      // let requests = await getRequests(binId);
+      let requests = await getRequests(binId);
 
-      renderRequests(dummyRequests, requestList, requestPage);
+      renderRequests(requests, requestList, requestPage);
   });
 
   home.addEventListener('click', (e) => {
@@ -63,7 +77,7 @@ function renderRequests(requests, list, requestPage) {
 
 function createRequestItem(request) {
   let item = document.createElement('li');
-  let text = 'Method: ' + request.method + '. Route: ' + request.route;
+  let text = 'Method: ' + request.method + '. Route: ' + request.route + ' created at: ' + request.created_at;
   item.textContent = text;
   item.dataset.request_id = request.request_id;
   return item;
@@ -97,6 +111,16 @@ function hideModal(modalLayer, requestDetailModal) {
 }
 
 // API Requests
+
+async function getRequest(requestId) {
+  try {
+    let response = await fetch(`/api/bins/${binId}/requests/${requestId}`);
+    let request = await response.json();
+    return request;
+  } catch (error) {
+    alert(`Error loading all request: ${error}`);
+  };
+}
 
 async function getRequests(binId) {
   try {
