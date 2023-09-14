@@ -1,4 +1,16 @@
+require("dotenv").config();
 const express = require('express');
+const mongoose = require('mongoose');
+
+mongoose.set('strictQuery', false);
+
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error conneccting to MongoDB', error.message);
+  });
 
 const port = 3000;
 
@@ -11,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // homepage that displays all bins
 app.get('/', (req, res) => {
+  console.log(req.body);
   const bins = { bin0: 'http://ourappname.com/endpoint1', 
                  bin1: 'http://ourappname.com/endpoint2'}; // eventually enable rdb.getBins()
   res.send(bins);
