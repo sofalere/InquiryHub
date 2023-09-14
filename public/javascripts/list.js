@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBins(dummyBins, binList, binPage); 
 
   requestList.addEventListener('click', (e) => {
-    console.log('Hi')
     let id = e.target.dataset.request_id;
     let body = dummyRequests.find(request => String(request.request_id) === id).body;
     requestDetailModal.textContent = body;
@@ -62,7 +61,6 @@ function renderRequests(requests, list, requestPage) {
   });
 }
 
-// return list element
 function createRequestItem(request) {
   let item = document.createElement('li');
   let text = 'Method: ' + request.method + '. Route: ' + request.route;
@@ -80,7 +78,6 @@ function renderBins(bins, list, binPage) {
   });
 }
 
-// return list element
 function createBin(bin) {
   let item = document.createElement('li');
   let text = 'Endpoint: ' + bin.endpoint;
