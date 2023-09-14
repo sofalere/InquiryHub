@@ -11,7 +11,7 @@ const services = require('./services');
 //   {bin_id: 1, endpoint: '/hi'},
 //   {bin_id: 2, endpoint: '/hello'},
 // ]
-
+//hello
 // let mongoRequest = 
 // {method: 'POST',
 // path: '/path',
