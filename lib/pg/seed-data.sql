@@ -1,9 +1,9 @@
 INSERT INTO bins (endpoint)
   VALUES ('1');
 
-INSERT INTO requests (http_method, http_path, mongo_id, bin_id)
-  VALUES ('GET', '/', '6502438962475a34323a642d', '1'),
-         ('POST', '/path', '6502438962475a34323a642e', '1');
+INSERT INTO requests (method, path, mongo_id, bin_id)
+  VALUES ('GET', '/', '65036aebd12a0fb81bf81ba4', '1'),
+         ('POST', '/path', '65036aebd12a0fb81bf81ba5', '1');
 
 -- INSERT INTO requests (headers, body, bin_id)
 --   VALUES  ('{host: enly5typv6anr.x.pipedream.net}', '{"zen":"Speak like a human.","hook_id":432955597,"hook":{"type":"Repository","id":432955597,"name":"web","active":true,"events":["*"],"config":{"content_type":"json","insecure_ssl":"0","url":"https://enly5typv6anr.x.pipedream.net"},"updated_at":"2023-09-11T02:08:18Z","created_at":"2023-09-11T02:08:18Z","url":"https://api.github.com/repos/marymcdonald/test-webhooks/hooks/432955597","test_url":"https://api.github.com/repos/marymcdonald/test-webhooks/hooks/432955597/test","ping_url":"https://api.github.com/repos/marymcdonald/test-webhooks/hooks/432955597/pings","deliveries_url":"https://api.github.com/repos/marymcdonald/test-webhooks/hooks/432955597/deliveries","last_response":{"code":null,"status":"unused","message":null}},"repository":{"id":689745107,"node_id":"R_kgDOKRys0w","name":"test-webhooks",}', 1),
