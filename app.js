@@ -1,5 +1,6 @@
 const express = require('express');
 const apiRouter = require('./routes/api');
+const saveRequest = require('./routes/middleware/save-request');
 
 const port = 3000;
 const app = express();
@@ -13,19 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', apiRouter);
 
-function formatRequest(req) {
-  return { http_path: req.path, http_method: req.method, headers: req.headers, body: req.body };
-}
-
 // accepts request at endpoint, saves in DB
-app.all('/listen/:endpoint', (req, res) => {
-  const endpoint = 1; // temp
-  const binId = rdb.getBin(endpoint);
-  const mongoId = String(ddb.addRequest(req)._id);
-
-  rdb.addRequest(binId, mongoId, formatRequest(req));
-  res.sendStatus(200);
-});
+app.all('/listen/endpoint', saveRequest)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
