@@ -1,11 +1,11 @@
 let dummyRequests = [
-  {request_id: 0, route: '/', method: 'GET', body: 'welcome to request bin', created_at: '11/12/12'},
+  {request_id: 0, route: '/1', method: 'GET', body: 'welcome to request bin', created_at: '11/12/12'},
   {request_id: 1, route: '/hi', method: 'POST', body: 'this is a post request', created_at: '08/02/21'},
   {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure', created_at: '9/01/22'},
 ]
 
 let dummyBins = [
-  {bin_id: 0, endpoint: '/'},
+  {bin_id: 0, endpoint: '1'},
   {bin_id: 1, endpoint: '/hi'},
   {bin_id: 2, endpoint: '/hello'},
 ]
@@ -32,12 +32,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   let home = document.querySelector('#home');
 
   let bins = await getBins();
-  renderBins(dummyBins, binList, binPage); 
+  console.log(bins);
+  renderBins(bins, binList, binPage); 
 
   requestList.addEventListener('click', async (e) => {
     let id = e.target.dataset.request_id;
     let request = await getRequest(id)
-    requestDetailModal.textContent = body;
+    requestDetailModal.textContent = JSON.stringify(request.body);
     showModal(modalLayer, requestDetailModal);
   });
   
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   binList.addEventListener('click', async (e) => {
       let binId = e.target.dataset.bin_id;
       let requests = await getRequests(binId);
+      console.log(requests);
 
       renderRequests(requests, requestList, requestPage);
   });
@@ -77,9 +79,9 @@ function renderRequests(requests, list, requestPage) {
 
 function createRequestItem(request) {
   let item = document.createElement('li');
-  let text = 'Method: ' + request.method + '. Route: ' + request.route + ' created at: ' + request.created_at;
+  let text = 'Method: ' + request.method + '. Route: ' + request.path + ' created at: ' + request.created_at;
   item.textContent = text;
-  item.dataset.request_id = request.request_id;
+  item.dataset.request_id = request.id;
   return item;
 }
 
@@ -114,7 +116,7 @@ function hideModal(modalLayer, requestDetailModal) {
 
 async function getRequest(requestId) {
   try {
-    let response = await fetch(`/api/bins/${binId}/requests/${requestId}`);
+    let response = await fetch(`/api/bins/1/requests/${requestId}`);
     let request = await response.json();
     return request;
   } catch (error) {
@@ -124,7 +126,7 @@ async function getRequest(requestId) {
 
 async function getRequests(binId) {
   try {
-    let response = await fetch(`/api/bins/${binId}/requests`);
+    let response = await fetch(`/api/bins/${binId}`);
     let requests = await response.json();
     return requests;
   } catch (error) {

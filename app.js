@@ -17,13 +17,10 @@ mongoose.connect(process.env.MONGODB_URI)
     console.log('error conneccting to MongoDB', error.message);
   });
 
+app.use(express.static('public'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRouter);
-
-app.get('/', (req, res) => {
-  res.send('Homepage');
-});
 
 // accepts request at endpoint, saves in DB
 app.all('/listen/endpoint', saveRequest)
