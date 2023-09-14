@@ -1,16 +1,23 @@
-let dummyRequests = [
-  {request_id: 0, route: '/1', method: 'GET', body: 'welcome to request bin', created_at: '11/12/12'},
-  {request_id: 1, route: '/hi', method: 'POST', body: 'this is a post request', created_at: '08/02/21'},
-  {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure', created_at: '9/01/22'},
-]
+const services = require('./services');
 
-let dummyBins = [
-  {bin_id: 0, endpoint: '1'},
-  {bin_id: 1, endpoint: '/hi'},
-  {bin_id: 2, endpoint: '/hello'},
-]
+// let dummyRequests = [
+//   {request_id: 0, route: '/1', method: 'GET', body: 'welcome to request bin', created_at: '11/12/12', headers: '{host: enly5typv6anr.x.pipedream.net}'},
+//   {request_id: 1, route: '/hi', method: 'POST', body: 'this is a post request', created_at: '08/02/21', headers: 'x-amzn-trace-id: Root=1-64ff2a41-56c163b91e20c3d76e4abd4b,content-length: 6288'},
+//   {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure', created_at: '9/01/22', headers: 'accept: */*, x-github-delivery:  2c5e7520-50b3-11ee-9809-93438ba782d3'},
+// ]
 
-let dummyRequest = {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure', created_at: '9/01/22'}
+// let bins = [
+//   {bin_id: 0, endpoint: '1'},
+//   {bin_id: 1, endpoint: '/hi'},
+//   {bin_id: 2, endpoint: '/hello'},
+// ]
+//hello
+// let mongoRequest = 
+// {method: 'POST',
+// path: '/path',
+// headers: {host: 'enly5typv6anr.x.pipedream.net', 'x-amzn-trace-id': 'Root=1-64ff2a41-56c163b91e20c3d76e4abd4b', 'content-length': '6288', 'user-agent': 'GitHub-Hookshot/c088b1f', accept: '*/*', 'x-github-delivery':  '2c5e7520-50b3-11ee-9809-93438ba782d3', 'x-github-event': 'star', 'x-github-hook-id': '432955597', 'x-github-hook-installation-target-id': '689745107', 'x-github-hook-installation-target-type': 'repository', 'content-type': 'application/json'},
+// body: {"zen":"Speak like a human.","hook_id":432955597,"hook":{"type":"Repository","id":432955597,"name":"web","active":true,"events":["*"],"config":{"content_type":"json","insecure_ssl":"0","url":"https://enly5typv6anr.x.pipedream.net"},"updated_at":"2023-09-11T02:08:18Z","created_at":"2023-09-11T02:08:18Z","url":"https://api.github.com/repos/marymcdonald/test-webhooks/hooks/432955597","test_url":"https://api.github.com/repos/marymcdonald/test-webhooks/hooks/432955597/test","ping_url":"https://api.github.com/repos/marymcdonald/test-webhooks/hooks/432955597/pings","deliveries_url":"https://api.github.com/repos/marymcdonald/test-webhooks/hooks/432955597/deliveries","last_response":{"code":null,"status":"unused","message":null}},"repository":{"id":689745107,"node_id":"R_kgDOKRys0w","name":"test-webhooks"}}
+// }
 
 document.addEventListener('DOMContentLoaded', async () => {
   // elements = {
@@ -25,20 +32,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let requestPage = document.querySelector('#single-bin');
   let requestList = document.querySelector('#requests');
-  let requestDetailModal = document.querySelector('#request_detail_modal');
-  let modalLayer = document.querySelector('#modal_layer');
+  let requestDetailModal = document.querySelector('#request-detail-modal');
+  let modalLayer = document.querySelector('#modal-layer');
   let binPage = document.querySelector('#all-bins');
   let binList = document.querySelector('#bins');
   let home = document.querySelector('#home');
+  let addNewButton = document.querySelector('#add-new-button');
 
-  let bins = await getBins();
+  let bins = await services.getBins();
   console.log(bins);
   renderBins(bins, binList, binPage); 
 
   requestList.addEventListener('click', async (e) => {
     let id = e.target.dataset.request_id;
-    let request = await getRequest(id)
-    requestDetailModal.textContent = JSON.stringify(request.body);
+    let request = await services.getRequest(id)
+    requestDetailModal.textContent = `Headers: ${JSON.stringify(request.headers)} Body: ${JSON.stringify(request.body)}`;
+
     showModal(modalLayer, requestDetailModal);
   });
   
@@ -49,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   binList.addEventListener('click', async (e) => {
       let binId = e.target.dataset.bin_id;
-      let requests = await getRequests(binId);
+      let requests = await services.getRequests(binId);
       console.log(requests);
 
       renderRequests(requests, requestList, requestPage);
@@ -57,6 +66,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   home.addEventListener('click', (e) => {
     showPage(binPage);
+  })
+
+  addNewButton.addEventListener('click', async (e) => {
+    const rawBin = await services.createBin();
+    const newBin = createBin(rawBin);
+    bins.push(newBin);
+    renderBins(bins, binList, binPage);
   })
 });
 
@@ -111,65 +127,3 @@ function hideModal(modalLayer, requestDetailModal) {
   modalLayer.style.display = 'none';
   requestDetailModal.style.display = 'none';
 }
-
-// API Requests
-
-async function getRequest(requestId) {
-  try {
-    let response = await fetch(`/api/bins/1/requests/${requestId}`);
-    let request = await response.json();
-    return request;
-  } catch (error) {
-    alert(`Error loading all request: ${error}`);
-  };
-}
-
-async function getRequests(binId) {
-  try {
-    let response = await fetch(`/api/bins/${binId}`);
-    let requests = await response.json();
-    return requests;
-  } catch (error) {
-    alert(`Error loading all requests: ${error}`);
-  };
-}
-  
-async function getBins() {
-  try {
-    let response = await fetch(`/api/bins`);
-    let bins = await response.json();
-    return bins;
-  } catch (error) {
-    alert(`Error loading bins`);
-  };
-}
-
-async function deleteRequest(binId, requestId) {
-    try {
-      let response = await fetch(`/api/bins/${binId}/requests/${requestId}`, {
-        method: 'DELETE',
-      });
-    } catch (error) {
-      alert(`Error deleting request with id ${binId}: ${error}`);
-    };
-  }
-
-async function deleteBin(binId) {
-  try {
-    await fetch(`/api/bins/${binId}`, {
-      method: 'DELETE',
-    });
-  } catch (error) {
-    alert(`Error updating bin with id ${binId}`);
-  };
-}
-
-// async function deleteAllRequests(binId) {
-//   try {
-//     let response = await fetch(`/api/bins/${binId}/requests/`, {
-//       method: 'DELETE',
-//     });
-//   } catch (error) {
-//     alert(`Error deleting all requests: ${error}`);
-//   };
-// }

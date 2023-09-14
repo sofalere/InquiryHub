@@ -2,7 +2,7 @@
   <head>
     <title>Bin List</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="javascripts/handlebars-v4.0.5.js"></script>
+    <!-- <script src="javascripts/handlebars-v4.0.5.js"></script> -->
     <script src="javascripts/list.js"></script>
     <link rel="stylesheet" href="stylesheets/list.css">
   </head>
@@ -10,12 +10,13 @@
     <div id="main">
       <div id="all-bins">
         <ol id="bins"></ol>
+        <button id="add-new-button">Create new bin!<button>
       </div>
       <div id="single-bin" hidden>
         <ol id="requests"></ol>
-        <div id="modal_layer"></div>
-        <div id="request_detail_modal"></div>
-        <button id="home">hello</button>
+        <div id="modal-layer"></div>
+        <div id="request-detail-modal"></div>
+        <button id="home">Back</button>
       </div>
     </div>
   </body>
