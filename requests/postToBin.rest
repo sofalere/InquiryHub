@@ -1,0 +1,7 @@
+POST http://localhost:3000/listen/endpoint
+Content-Type: application/json
+
+{
+  "message": "this request bin is working pretty well",
+  "result": "an excellent career for all involved"
+}
