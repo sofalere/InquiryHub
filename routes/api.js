@@ -59,7 +59,6 @@ router.get('/bins/:bin_id/requests/:request_id', async (req, res) => {
   }
 });
 
-
 // delete a request
 router.delete('/bins/:bin_id/requests/:request_id', async (req, res) => {
   try {
