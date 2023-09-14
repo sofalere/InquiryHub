@@ -98,7 +98,7 @@ function createBin(bin) {
   let item = document.createElement('li');
   let text = 'Endpoint: ' + bin.endpoint;
   item.textContent = text;
-  item.dataset.bin_id = bin.bin_id;
+  item.dataset.bin_id = bin.id;
   return item;
 }
 

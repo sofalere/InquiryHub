@@ -18,9 +18,8 @@ router.get('/bins', async (req, res) => {
 // get one bin and its request previews
 router.get('/bins/:bin_id', async (req, res) => {
   try {
-    const endpoint = 1; // when dynamic will retrieve req.params['bin_id']
-    const binId = await rdb.getBin(endpoint);
-    const requests = await rdb.getRequests(binId);
+    const binId = req.params['bin_id'];
+    const requests = await rdb.getRequestsWithBinId(binId);
     
     res.json(requests);
   } catch (error) {
@@ -31,8 +30,7 @@ router.get('/bins/:bin_id', async (req, res) => {
 // get all requests from specific bin
 router.get('/bins/:bin_id/requests', async (req, res) => {
   try {
-    const endpoint = 1; // when dynamic will retrieve req.params['bin_id']
-    const binId = await rdb.getBin(endpoint);
+    const binId = req.params['bin_id']
     const mongoIds = await rdb.getMongoIds(binId);
 
     const requests = [];
