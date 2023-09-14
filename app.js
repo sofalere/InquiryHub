@@ -1,6 +1,11 @@
 require("dotenv").config();
 const express = require('express');
 const mongoose = require('mongoose');
+const apiRouter = require('./routes/api');
+const saveRequest = require('./routes/middleware/save-request');
+
+const port = 3000;
+const app = express();
 
 mongoose.set('strictQuery', false);
 
@@ -12,20 +17,13 @@ mongoose.connect(process.env.MONGODB_URI)
     console.log('error conneccting to MongoDB', error.message);
   });
 
-const apiRouter = require('./routes/api');
-const saveRequest = require('./routes/middleware/save-request');
-
-const port = 3000;
-const app = express();
-
-const rdb = require('./lib/pg/query');
-const ddb = require('./lib/mongo/query');
-
-// allows us to read request body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use('/api', apiRouter);
+
+app.get('/', (req, res) => {
+  res.send('Homepage');
+});
 
 // accepts request at endpoint, saves in DB
 app.all('/listen/endpoint', saveRequest)
