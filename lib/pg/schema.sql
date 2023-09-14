@@ -9,8 +9,8 @@ CREATE TABLE bins (
 CREATE TABLE requests (
   id serial PRIMARY KEY,
   created_at timestamp DEFAULT CURRENT_TIMESTAMP,
-  http_method method_type NOT NULL,
-  http_path text NOT NULL,
+  method method_type NOT NULL,
+  path text NOT NULL,
   mongo_id text UNIQUE NOT NULL,
   bin_id integer NOT NULL REFERENCES bins (id)
 );

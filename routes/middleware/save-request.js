@@ -2,7 +2,7 @@ const rdb = require('../../lib/pg/query');
 const ddb = require('../../lib/mongo/query');
 
 function formatRequest(req) {
-  return { http_path: req.path, http_method: req.method, headers: req.headers, body: req.body };
+  return { path: req.path, method: req.method, headers: req.headers, body: req.body };
 }
 
 async function saveRequest(req, res) {
