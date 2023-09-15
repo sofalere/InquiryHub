@@ -18,6 +18,7 @@ router.get('/bins', async (req, res) => {
 router.post('/bins', async (req, res) => {
   try {
     const bin = await rdb.addBin();
+    console.log(bin);
     res.json(bin);
   } catch (error) {
     res.status(500).send(error.message);

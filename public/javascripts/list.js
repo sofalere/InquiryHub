@@ -86,9 +86,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   addNewButton.addEventListener('click', async (e) => {
-    const rawBin = await createBin();
-    const newBin = createBin(rawBin);
-    bins.push(newBin);
+    const bin = await addBin();
+    bins.push(bin);
     renderBins(bins, binList, binPage);
   });
 });
