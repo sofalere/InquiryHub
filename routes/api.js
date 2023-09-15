@@ -15,6 +15,15 @@ router.get('/bins', async (req, res) => {
   }
 });
 
+router.post('/bins', async (req, res) => {
+  try {
+    const bin = await rdb.addBin();
+    res.json(bin);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
 // get one bin and its request previews
 router.get('/bins/:bin_id', async (req, res) => {
   try {
