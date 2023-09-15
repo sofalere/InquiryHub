@@ -1,67 +1,100 @@
-let dummyRequests = [
-  {request_id: 0, route: '/1', method: 'GET', body: 'welcome to request bin', created_at: '11/12/12'},
-  {request_id: 1, route: '/hi', method: 'POST', body: 'this is a post request', created_at: '08/02/21'},
-  {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure', created_at: '9/01/22'},
-]
-
-let dummyBins = [
-  {bin_id: 0, endpoint: '1'},
-  {bin_id: 1, endpoint: '/hi'},
-  {bin_id: 2, endpoint: '/hello'},
-]
-
-let dummyRequest = {request_id: 2, route: '/', method: 'PUT', body: 'three for good measure', created_at: '9/01/22'}
+import {
+  getBins, getRequest, getRequests, addBin, deleteRequest, deleteBin,
+} from './services.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // elements = {
-  //   home: document.querySelector('#home'),
-  //   binPage: document.querySelector('#all-bins'),
-  //   requestPage: document.querySelector('#single-bin'),
-  //   requests: document.querySelector('#requests'),
-  //   bins: document.querySelector('#bins'),
-  //   requestDetailModal: document.querySelector('#request_detail_modal'),
-  //   modalLayer: document.querySelector('#modal_layer'),
-  // }
+  const requestPage = document.querySelector('#single-bin');
+  const requestList = document.querySelector('#requests');
+  const requestDetailModal = document.querySelector('#request-detail-modal');
+  const modalLayer = document.querySelector('#modal-layer');
+  const binPage = document.querySelector('#all-bins');
+  const binList = document.querySelector('#bins');
+  const backButton = document.querySelector('#back');
+  const addNewButton = document.querySelector('#add-new-button');
+  const main = document.querySelector('#main');
 
-  let requestPage = document.querySelector('#single-bin');
-  let requestList = document.querySelector('#requests');
-  let requestDetailModal = document.querySelector('#request_detail_modal');
-  let modalLayer = document.querySelector('#modal_layer');
-  let binPage = document.querySelector('#all-bins');
-  let binList = document.querySelector('#bins');
-  let home = document.querySelector('#home');
+  const bins = await getBins();
+  renderBins(bins, binList, binPage);
 
-  let bins = await getBins();
-  console.log(bins);
-  renderBins(bins, binList, binPage); 
+  main.addEventListener('mouseenter', (event) => {
+    if (event.target.classList.contains('hover-text')) {
+      event.target.style.color = 'blue';
+      event.target.style.cursor = 'help';
+    }
+  });
+
+  main.addEventListener('mouseleave', (event) => {
+    if (event.target.classList.contains('hover-text')) {
+      event.target.style.color = 'black';
+      event.target.style.cursor = 'pointer';
+    }
+  });
 
   requestList.addEventListener('click', async (e) => {
-    let id = e.target.dataset.request_id;
-    let request = await getRequest(id)
-    requestDetailModal.textContent = JSON.stringify(request.body);
+    const requestItems = document.querySelectorAll('.hover-text');
+    requestItems.forEach((item) => item.classList.remove('highlighted-request'));
+
+    const id = e.target.dataset.request_id;
+    const request = await getRequest(id);
+
+    const modalContent = document.createElement('div');
+    function displayJSONObject(obj, parentKey = '') {
+      const container = modalContent;
+
+      for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+              const keyValueContainer = document.createElement('div');
+              keyValueContainer.textContent = `${key}: ${JSON.stringify(obj[key])} \n`;
+              container.appendChild(keyValueContainer);
+
+              if (typeof obj[key] === 'object' && obj[key] !== null) {
+                  displayJSONObject(obj[key], `${parentKey}${key}.`);
+              }
+          }
+      }
+  }
+    const headersHeader = document.createElement('h4');
+    headersHeader.textContent = 'Headers:';
+    modalContent.appendChild(headersHeader);
+    displayJSONObject(request.headers);
+    const bodyHeader = document.createElement('h4');
+    bodyHeader.textContent = 'Body:';
+    modalContent.appendChild(bodyHeader);
+    displayJSONObject(request.body);
+
+    requestDetailModal.innerHTML = '';
+    requestDetailModal.appendChild(modalContent);
+    e.target.classList.add('highlighted-request');
+
     showModal(modalLayer, requestDetailModal);
   });
-  
+
   modalLayer.addEventListener('click', (e) => {
-    requestDetailModal.textContent = "";
+    requestDetailModal.textContent = '';
     hideModal(modalLayer, requestDetailModal);
   });
 
   binList.addEventListener('click', async (e) => {
-      let binId = e.target.dataset.bin_id;
-      let requests = await getRequests(binId);
-      console.log(requests);
-
-      renderRequests(requests, requestList, requestPage);
+    const binId = e.target.dataset.bin_id;
+    const requests = await getRequests(binId);
+    renderRequests(requests, requestList, requestPage);
   });
 
-  home.addEventListener('click', (e) => {
+  backButton.addEventListener('click', (e) => {
+    requestDetailModal.innerHTML = '';
     showPage(binPage);
-  })
+  });
+
+  addNewButton.addEventListener('click', async (e) => {
+    const rawBin = await createBin();
+    const newBin = createBin(rawBin);
+    bins.push(newBin);
+    renderBins(bins, binList, binPage);
+  });
 });
 
 function showPage(pageElem) {
-  let main = document.querySelector('#main');
+  const main = document.querySelector('#main');
   main.childNodes.forEach((child) => {
     child.hidden = true;
   });
@@ -70,16 +103,17 @@ function showPage(pageElem) {
 
 function renderRequests(requests, list, requestPage) {
   showPage(requestPage);
-  list.innerHTML = "";
+  list.innerHTML = '';
   requests.forEach((request) => {
-    let listItem = createRequestItem(request);
+    const listItem = createRequestItem(request);
     list.appendChild(listItem);
   });
 }
 
 function createRequestItem(request) {
-  let item = document.createElement('li');
-  let text = 'Method: ' + request.method + '. Route: ' + request.path + ' created at: ' + request.created_at;
+  const item = document.createElement('li');
+  item.classList.add('hover-text');
+  const text = `Method: ${request.method}. Route: ${request.path} created at: ${request.created_at}`;
   item.textContent = text;
   item.dataset.request_id = request.id;
   return item;
@@ -87,16 +121,17 @@ function createRequestItem(request) {
 
 function renderBins(bins, list, binPage) {
   showPage(binPage);
-  list.innerHTML = "";
+  list.innerHTML = '';
   bins.forEach((bin) => {
-    let listItem = createBin(bin);
+    const listItem = createBin(bin);
     list.appendChild(listItem);
   });
 }
 
 function createBin(bin) {
-  let item = document.createElement('li');
-  let text = 'Endpoint: ' + bin.endpoint;
+  const item = document.createElement('li');
+  item.classList.add('hover-text');
+  const text = `Endpoint: ${bin.endpoint}`;
   item.textContent = text;
   item.dataset.bin_id = bin.id;
   return item;
@@ -111,65 +146,3 @@ function hideModal(modalLayer, requestDetailModal) {
   modalLayer.style.display = 'none';
   requestDetailModal.style.display = 'none';
 }
-
-// API Requests
-
-async function getRequest(requestId) {
-  try {
-    let response = await fetch(`/api/bins/1/requests/${requestId}`);
-    let request = await response.json();
-    return request;
-  } catch (error) {
-    alert(`Error loading all request: ${error}`);
-  };
-}
-
-async function getRequests(binId) {
-  try {
-    let response = await fetch(`/api/bins/${binId}`);
-    let requests = await response.json();
-    return requests;
-  } catch (error) {
-    alert(`Error loading all requests: ${error}`);
-  };
-}
-  
-async function getBins() {
-  try {
-    let response = await fetch(`/api/bins`);
-    let bins = await response.json();
-    return bins;
-  } catch (error) {
-    alert(`Error loading bins`);
-  };
-}
-
-async function deleteRequest(binId, requestId) {
-    try {
-      let response = await fetch(`/api/bins/${binId}/requests/${requestId}`, {
-        method: 'DELETE',
-      });
-    } catch (error) {
-      alert(`Error deleting request with id ${binId}: ${error}`);
-    };
-  }
-
-async function deleteBin(binId) {
-  try {
-    await fetch(`/api/bins/${binId}`, {
-      method: 'DELETE',
-    });
-  } catch (error) {
-    alert(`Error updating bin with id ${binId}`);
-  };
-}
-
-// async function deleteAllRequests(binId) {
-//   try {
-//     let response = await fetch(`/api/bins/${binId}/requests/`, {
-//       method: 'DELETE',
-//     });
-//   } catch (error) {
-//     alert(`Error deleting all requests: ${error}`);
-//   };
-// }
