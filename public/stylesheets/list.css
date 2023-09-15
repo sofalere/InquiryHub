@@ -18,3 +18,21 @@
   background: rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
+
+.highlighted-request {
+  background-color: light
+  gray;
+  color: white;
+}
+
+/* Default styles */
+.hover-text {
+  color: black;
+  cursor: pointer;
+}
+
+/* Hover styles */
+.hover-text:hover {
+  color: rgb(0, 81, 255);
+  cursor: pointer;
+}

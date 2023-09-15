@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRouter);
 
-// accepts request at endpoint, saves in DB
+accepts request at endpoint, saves in DB
 app.all('/listen/endpoint', saveRequest)
 
 app.listen(port, () => {
