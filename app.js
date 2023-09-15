@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRouter);
 
 // accepts request at endpoint, saves in DB
-app.all('/listen/endpoint', saveRequest)
+app.all('/listen/:endpoint*', saveRequest)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

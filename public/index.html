@@ -3,20 +3,22 @@
     <title>Bin List</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- <script src="javascripts/handlebars-v4.0.5.js"></script> -->
-    <script src="javascripts/list.js"></script>
+    <script type="module" src="javascripts/list.js"></script>
     <link rel="stylesheet" href="stylesheets/list.css">
   </head>
   <body>
+    <h1>Request Bin</h1>
     <div id="main">
       <div id="all-bins">
         <ol id="bins"></ol>
-        <button id="add-new-button">Create new bin!<button>
+
+        <button id="add-new-button" type="button">Create new bin!</button>
       </div>
       <div id="single-bin" hidden>
         <ol id="requests"></ol>
         <div id="modal-layer"></div>
         <div id="request-detail-modal"></div>
-        <button id="home">Back</button>
+        <button id="back">Back</button>
       </div>
     </div>
   </body>

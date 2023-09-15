@@ -1,6 +1,4 @@
-// API Requests
-
-async function getRequest(requestId) {
+export async function getRequest(requestId) {
   try {
     let response = await fetch(`/api/bins/1/requests/${requestId}`);
     let request = await response.json();
@@ -10,7 +8,7 @@ async function getRequest(requestId) {
   };
 }
 
-async function getRequests(binId) {
+export async function getRequests(binId) {
   try {
     let response = await fetch(`/api/bins/${binId}`);
     let requests = await response.json();
@@ -20,17 +18,18 @@ async function getRequests(binId) {
   };
 }
   
-async function getBins() {
+export async function getBins() {
   try {
-    let response = await fetch(`/api/bins`);
-    let bins = await response.json();
+    const response = await fetch(`/api/bins`);
+    console.log(response)
+    const bins = await response.json();
     return bins;
   } catch (error) {
     alert(`Error loading bins`);
   };
 }
 
-async function createBin() {
+export async function addBin() {
   try {
     let response = await fetch(`/api/bins`, {
       method: 'POST'
@@ -42,7 +41,7 @@ async function createBin() {
   };
 }
 
-async function deleteRequest(binId, requestId) {
+export async function deleteRequest(binId, requestId) {
     try {
       let response = await fetch(`/api/bins/${binId}/requests/${requestId}`, {
         method: 'DELETE',
@@ -52,7 +51,7 @@ async function deleteRequest(binId, requestId) {
     };
   }
 
-async function deleteBin(binId) {
+export async function deleteBin(binId) {
   try {
     await fetch(`/api/bins/${binId}`, {
       method: 'DELETE',
@@ -61,14 +60,3 @@ async function deleteBin(binId) {
     alert(`Error updating bin with id ${binId}`);
   };
 }
-
-// async function deleteAllRequests(binId) {
-//   try {
-//     let response = await fetch(`/api/bins/${binId}/requests/`, {
-//       method: 'DELETE',
-//     });
-//   } catch (error) {
-//     alert(`Error deleting all requests: ${error}`);
-//   };
-// }
-//hello

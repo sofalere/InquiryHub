@@ -1,4 +1,4 @@
-POST http://localhost:3000/listen/endpoint
+POST http://localhost:3000/listen/abcdefg
 Content-Type: application/json
 
 {
