@@ -1,4 +1,4 @@
-#request_detail_modal{
+/* #request_detail_modal{
   display: none;
   position: absolute;
   top: 25%;
@@ -18,3 +18,54 @@
   background: rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
+
+.highlighted-request {
+  background-color: light
+  gray;
+  /* color: white; */
+}
+
+.hover-text {
+  color: black;
+  cursor: pointer;
+}
+
+.hover-text:hover {
+  color: rgb(0, 81, 255);
+  cursor: pointer;
+}
+ */
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f4f4f4;
+  color: #333;
+  font-family: Arial, sans-serif;
+}
+
+#main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size:
