@@ -29,16 +29,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRouter);
 
-// io.on('connection', (socket) => {
-//   console.log('a user connected');
-  // socket.on('new request', (request) => {
-  //   console.log('new request: ' + request);
-  // });
-// });
-// io.on("connection", (socket) => {
-//   sockets.emit("new request");
-// });
-
 app.all('/listen/:endpoint*', async (req, res) => {
   const request = await saveRequest(req);
   io.sockets.emit('new request', request);
