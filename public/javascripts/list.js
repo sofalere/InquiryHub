@@ -3,6 +3,7 @@ import {
 } from './services.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const socket = io();
   const requestPage = document.querySelector('#single-bin');
   const requestList = document.querySelector('#requests');
   const requestDetailModal = document.querySelector('#request-detail-modal');
@@ -37,33 +38,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const id = e.target.dataset.request_id;
     const request = await getRequest(id);
 
-    const modalContent = document.createElement('div');
-    function displayJSONObject(obj, parentKey = '') {
-      const container = modalContent;
-
-      for (const key in obj) {
-          if (obj.hasOwnProperty(key)) {
-              const keyValueContainer = document.createElement('div');
-              keyValueContainer.textContent = `${key}: ${JSON.stringify(obj[key])} \n`;
-              container.appendChild(keyValueContainer);
-
-              if (typeof obj[key] === 'object' && obj[key] !== null) {
-                  displayJSONObject(obj[key], `${parentKey}${key}.`);
-              }
-          }
-      }
-  }
-    const headersHeader = document.createElement('h4');
-    headersHeader.textContent = 'Headers:';
-    modalContent.appendChild(headersHeader);
-    displayJSONObject(request.headers);
-    const bodyHeader = document.createElement('h4');
-    bodyHeader.textContent = 'Body:';
-    modalContent.appendChild(bodyHeader);
-    displayJSONObject(request.body);
-
     requestDetailModal.innerHTML = '';
-    requestDetailModal.appendChild(modalContent);
+    requestDetailModal.appendChild(renderSingleRequest(request));
     e.target.classList.add('highlighted-request');
 
     showModal(modalLayer, requestDetailModal);
@@ -89,6 +65,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const bin = await addBin();
     bins.push(bin);
     renderBins(bins, binList, binPage);
+  });
+
+  socket.on('new request', (request) => {
+    console.log('Received a message from the server:', request);
+    const listItem = createRequestItem(request);
+    requestList.appendChild(listItem);
   });
 });
 
@@ -134,6 +116,36 @@ function createBin(bin) {
   item.textContent = text;
   item.dataset.bin_id = bin.id;
   return item;
+}
+
+function renderSingleRequest(request) {
+  const modalContent = document.createElement('div');
+  function displayJSONObject(obj, parentKey = '') {
+    const container = modalContent;
+
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const keyValueContainer = document.createElement('div');
+        keyValueContainer.textContent = `${key}: ${JSON.stringify(obj[key])} \n`;
+        container.appendChild(keyValueContainer);
+
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+          displayJSONObject(obj[key], `${parentKey}${key}.`);
+        }
+      }
+    }
+  }
+
+  const headersHeader = document.createElement('h4');
+  headersHeader.textContent = 'Headers:';
+  modalContent.appendChild(headersHeader);
+  displayJSONObject(request.headers);
+  const bodyHeader = document.createElement('h4');
+  bodyHeader.textContent = 'Body:';
+  modalContent.appendChild(bodyHeader);
+  displayJSONObject(request.body);
+
+  return modalContent;
 }
 
 function showModal(modalLayer, requestDetailModal) {

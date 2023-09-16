@@ -21,7 +21,6 @@ export async function getRequests(binId) {
 export async function getBins() {
   try {
     const response = await fetch(`/api/bins`);
-    console.log(response)
     const bins = await response.json();
     return bins;
   } catch (error) {
