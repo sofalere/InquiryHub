@@ -1,11 +1,18 @@
 require("dotenv").config();
+
 const express = require('express');
+const { createServer } = require('node:http');
+const { Server } = require('socket.io');
+
 const mongoose = require('mongoose');
+
 const apiRouter = require('./routes/api');
 const saveRequest = require('./routes/middleware/save-request');
 
 const port = 3000;
 const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
 mongoose.set('strictQuery', false);
 
@@ -22,9 +29,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRouter);
 
-// accepts request at endpoint, saves in DB
-app.all('/listen/:endpoint*', saveRequest)
+app.all('/listen/:endpoint*', async (req, res) => {
+  const request = await saveRequest(req);
+  io.sockets.emit('new request', request);
+  res.sendStatus(200);
+});
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
