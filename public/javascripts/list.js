@@ -3,6 +3,7 @@ import {
 } from './services.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const socket = io();
   const requestPage = document.querySelector('#single-bin');
   const requestList = document.querySelector('#requests');
   const requestDetailModal = document.querySelector('#request-detail-modal');
@@ -31,40 +32,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   requestList.addEventListener('click', async (e) => {
+    if (e.target.tagName != 'LI') {
+      return;
+    }
     const requestItems = document.querySelectorAll('.hover-text');
-    requestItems.forEach((item) => item.classList.remove('highlighted-request'));
 
     const id = e.target.dataset.request_id;
     const request = await getRequest(id);
 
-    const modalContent = document.createElement('div');
-    function displayJSONObject(obj, parentKey = '') {
-      const container = modalContent;
-
-      for (const key in obj) {
-          if (obj.hasOwnProperty(key)) {
-              const keyValueContainer = document.createElement('div');
-              keyValueContainer.textContent = `${key}: ${JSON.stringify(obj[key])} \n`;
-              container.appendChild(keyValueContainer);
-
-              if (typeof obj[key] === 'object' && obj[key] !== null) {
-                  displayJSONObject(obj[key], `${parentKey}${key}.`);
-              }
-          }
-      }
-  }
-    const headersHeader = document.createElement('h4');
-    headersHeader.textContent = 'Headers:';
-    modalContent.appendChild(headersHeader);
-    displayJSONObject(request.headers);
-    const bodyHeader = document.createElement('h4');
-    bodyHeader.textContent = 'Body:';
-    modalContent.appendChild(bodyHeader);
-    displayJSONObject(request.body);
-
     requestDetailModal.innerHTML = '';
-    requestDetailModal.appendChild(modalContent);
-    e.target.classList.add('highlighted-request');
+    requestDetailModal.appendChild(renderSingleRequest(request));
 
     showModal(modalLayer, requestDetailModal);
   });
@@ -90,6 +67,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     bins.push(bin);
     renderBins(bins, binList, binPage);
   });
+
+  socket.on('new request', (request) => {
+    const listItem = createRequestItem(request);
+    requestList.appendChild(listItem);
+  });
 });
 
 function showPage(pageElem) {
@@ -105,8 +87,24 @@ function renderRequests(requests, list, requestPage) {
   list.innerHTML = '';
   requests.forEach((request) => {
     const listItem = createRequestItem(request);
+
     list.appendChild(listItem);
   });
+}
+
+function createDeleteButton() {
+  const deleteButton = document.createElement('button');
+  deleteButton.classList.add('delete-button');
+  deleteButton.innerHTML = '<span>&times;</span>';
+  deleteButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const listItem = deleteButton.parentElement;
+    if (listItem) {
+      listItem.remove();
+      listItem.dataset.request_id ? deleteRequest(listItem.dataset.request_id) : deleteBin(listItem.dataset.bin_id);
+    }
+  });
+  return deleteButton;
 }
 
 function createRequestItem(request) {
@@ -115,6 +113,8 @@ function createRequestItem(request) {
   const text = `Method: ${request.method}. Route: ${request.path} created at: ${request.created_at}`;
   item.textContent = text;
   item.dataset.request_id = request.id;
+
+  item.appendChild(createDeleteButton());
   return item;
 }
 
@@ -133,7 +133,36 @@ function createBin(bin) {
   const text = `Endpoint: ${bin.endpoint}`;
   item.textContent = text;
   item.dataset.bin_id = bin.id;
+  item.appendChild(createDeleteButton());
   return item;
+}
+
+function displayJSONObject(container, obj, parentKey = '') {
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const keyValueContainer = document.createElement('li');
+      keyValueContainer.textContent = `${key}: ${JSON.stringify(obj[key])} \n`;
+      container.appendChild(keyValueContainer);
+
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        displayJSONObject(obj[key], `${parentKey}${key}.`);
+      }
+    }
+  }
+}
+
+function renderSingleRequest(request) {
+  const modalContent = document.createElement('div');
+  const headersHeader = document.createElement('h4');
+  headersHeader.textContent = 'Headers:';
+  modalContent.appendChild(headersHeader);
+  displayJSONObject(modalContent, request.headers);
+  const bodyHeader = document.createElement('h4');
+  bodyHeader.textContent = 'Body:';
+  modalContent.appendChild(bodyHeader);
+  displayJSONObject(modalContent, request.body);
+
+  return modalContent;
 }
 
 function showModal(modalLayer, requestDetailModal) {

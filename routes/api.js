@@ -18,7 +18,6 @@ router.get('/bins', async (req, res) => {
 router.post('/bins', async (req, res) => {
   try {
     const bin = await rdb.addBin();
-    console.log(bin);
     res.json(bin);
   } catch (error) {
     res.status(500).send(error.message);
@@ -68,7 +67,7 @@ router.get('/bins/:bin_id/requests/:request_id', async (req, res) => {
 });
 
 // delete a request
-router.delete('/bins/:bin_id/requests/:request_id', async (req, res) => {
+router.delete('/bins/requests/:request_id', async (req, res) => {
   try {
     const mongoId = await rdb.deleteRequest(req.params['request_id']);
     await ddb.deleteRequest(mongoId);
@@ -80,15 +79,19 @@ router.delete('/bins/:bin_id/requests/:request_id', async (req, res) => {
 
 
 // delete a bin
-// router.delete('/bins/:bin_id', async (req, res) => {
-//   try {
-//     endpoint = 1; // when dynamic will retrieve req.params['bin_id']
-//     const binId = await rdb.getBin(endpoint);
-
-//     res.sendStatus(200);
-//  } catch {
-//      res.status(500).send(error.message);
-//  }
-// });
+router.delete('/bins/:bin_id', async (req, res) => {
+  try {
+    const binId = req.params['bin_id'];
+    const requests = await rdb.getRequestsWithBinId(binId);
+    for (const request of requests) {
+      await ddb.deleteRequest(request.mongo_id);
+      await rdb.deleteRequest(request.id);
+    }
+    await rdb.deleteBin(binId);
+    res.sendStatus(200);
+ } catch (error){
+     res.status(500).send(error.message);
+ }
+});
 
 module.exports = router;
