@@ -40,13 +40,13 @@ export async function addBin() {
   };
 }
 
-export async function deleteRequest(binId, requestId) {
+export async function deleteRequest(requestId) {
     try {
-      let response = await fetch(`/api/bins/${binId}/requests/${requestId}`, {
+      let response = await fetch(`/api/bins/requests/${requestId}`, {
         method: 'DELETE',
       });
     } catch (error) {
-      alert(`Error deleting request with id ${binId}: ${error}`);
+      alert(`Error deleting request with id ${requestId}: ${error}`);
     };
   }
 
