@@ -1,6 +1,6 @@
-# Request Bin
+# Inquiry Hub
 
-Request Bin is a simple HTTP request inspection tool built using JavaScript, Node.js, MongoDB, and PostgreSQL. It allows you to create temporary endpoints to capture and inspect incoming HTTP requests for debugging and testing purposes.
+A request bin clone, a simple HTTP request inspection tool built using JavaScript, Node.js, MongoDB, and PostgreSQL. It allows you to create temporary endpoints to capture and inspect incoming HTTP requests for debugging and testing purposes.
 
 ## Features
 
